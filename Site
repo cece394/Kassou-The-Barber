@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kassou the Barber</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black:       #0a0a0a;
+      --dark:        #111111;
+      --dark2:       #1a1a1a;
+      --dark3:       #222222;
+      --gold:        #c9a84c;
+      --gold-light:  #e8c97a;
+      --gold-dark:   #8a6b28;
+      --white:       #f5f3ef;
+      --white2:      #e0ddd6;
+      --gray:        #6b6b6b;
+      --gray-light:  #2e2e2e;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+    /* ===== GOLD DIVIDER ===== */
+    .gold-line {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto;
+    }
+
+    /* ===== SECTION TITLE ===== */
+    .section-title {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .section-title .label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .section-title h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.05em;
+    }
+    .section-title .gold-line { margin-top: 1rem; }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ===== NAVBAR ===== */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      transition: background 0.4s, padding 0.4s;
+    }
+    #navbar.scrolled {
+      background: rgba(10, 10, 10, 0.95);
+      backdrop-filter: blur(12px);
+      padding: 0.7rem 1.5rem;
+      border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+    }
+    /* === REMPLACEZ "logo.png" par votre propre fichier logo === */
+    .nav-logo img {
+      height: 42px;
+      width: auto;
+      object-fit: contain;
+    }
+    /* Fallback texte si logo.png absent */
+    .nav-logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+    .nav-menu {
+      display: flex;
+      gap: 1.8rem;
+      list-style: none;
+    }
+    .nav-menu a {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white2);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-menu a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+    .nav-menu a:hover { color: var(--gold); }
+    .nav-menu a:hover::after { width: 100%; }
+    /* Burger (mobile) */
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .burger span {
+      display: block;
+      width: 24px; height: 1.5px;
+      background: var(--gold);
+      transition: all 0.3s;
+    }
+    /* Mobile nav overlay */
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,10,0.97);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--white);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .mobile-nav a:hover { color: var(--gold); }
+    .mobile-nav-close {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      background: none; border: none;
+      color: var(--gold); font-size: 1.8rem;
+      cursor: pointer;
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      /* Motif de fond subtil */
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 60%, rgba(201,168,76,0.06) 0%, transparent 70%),
+        var(--black);
+    }
+    .hero-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(201,168,76,0.02) 80px, rgba(201,168,76,0.02) 81px),
+        repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(201,168,76,0.02) 80px, rgba(201,168,76,0.02) 81px);
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 680px; }
+    .hero-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 12vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.3rem;
+    }
+    .hero-name span { color: var(--gold); }
+    .hero-sub {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--gold-light);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+    .gold-line-hero {
+      width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto 1.5rem;
+    }
+    .hero-desc {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--white2);
+      max-width: 420px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-desc strong { color: var(--gold); font-weight: 500; }
+    .btn-planity {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--gold);
+      color: var(--black);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 1rem 2.2rem;
+      border: 1px solid var(--gold);
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+    }
+    .btn-planity:hover {
+      background: transparent;
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+    .btn-planity-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: transparent;
+      color: var(--gold);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.85rem 1.8rem;
+      border: 1px solid var(--gold);
+      transition: background 0.3s, color 0.3s, transform 0.2s;
+    }
+    .btn-planity-ghost:hover {
+      background: var(--gold);
+      color: var(--black);
+      transform: translateY(-2px);
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--gray);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollAnim 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollAnim {
+      0%, 100% { opacity: 1; transform: scaleY(1); }
+      50% { opacity: 0.3; transform: scaleY(0.5); }
+    }
+
+    /* ===== GALERIE ===== */
+    #galerie {
+      padding: 6rem 1.5rem;
+      background: var(--dark);
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .gallery-card {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    /* === REMPLACEZ "coupe1.jpg", "coupe2.jpg", "coupe3.jpg", "coupe4.jpg" par vos propres photos === */
+    .gallery-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+      filter: grayscale(20%) brightness(0.85);
+    }
+    .gallery-card:hover img {
+      transform: scale(1.06);
+      filter: grayscale(0%) brightness(1);
+    }
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.2rem;
+    }
+    .gallery-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+    .gallery-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    /* Placeholder couleur si image absente */
+    .gallery-card .img-placeholder {
+      width: 100%; height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--dark3);
+      color: var(--gray);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== AVIS ===== */
+    #avis {
+      padding: 6rem 1.5rem;
+      background: var(--black);
+      overflow: hidden;
+    }
+    .carousel-track-wrapper {
+      overflow: hidden;
+      position: relative;
+    }
+    .carousel-track {
+      display: flex;
+      gap: 1.2rem;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .avis-card {
+      min-width: min(320px, 85vw);
+      background: var(--dark2);
+      border: 1px solid rgba(201,168,76,0.15);
+      padding: 2rem 1.5rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .avis-card::before {
+      content: '"';
+      position: absolute;
+      top: 0.5rem; left: 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 4rem;
+      color: rgba(201,168,76,0.2);
+      line-height: 1;
+    }
+    .stars { color: var(--gold); font-size: 0.85rem; margin-bottom: 1rem; }
+    .avis-text {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: var(--white2);
+      font-style: italic;
+      margin-bottom: 1.2rem;
+    }
+    .avis-author { display: flex; align-items: center; gap: 0.8rem; }
+    .author-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--gold-dark);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.75rem; color: var(--black);
+    }
+    .author-name {
+      font-size: 0.85rem; font-weight: 500; color: var(--white);
+    }
+    .author-loc {
+      font-size: 0.72rem; color: var(--gray); letter-spacing: 0.05em;
+    }
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .carousel-btn {
+      width: 42px; height: 42px;
+      border: 1px solid var(--gold-dark);
+      background: transparent;
+      color: var(--gold);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      transition: background 0.3s, color 0.3s;
+    }
+    .carousel-btn:hover { background: var(--gold); color: var(--black); }
+    .carousel-dots {
+      display: flex; gap: 6px;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gray-light);
+      transition: background 0.3s, width 0.3s;
+    }
+    .dot.active { background: var(--gold); width: 18px; border-radius: 3px; }
+
+    /* ===== ACCÈS ===== */
+    #acces {
+      padding: 6rem 1.5rem;
+      background: var(--dark);
+    }
+    .acces-grid {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+    .acces-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+    .acces-detail {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.2rem;
+    }
+    .acces-detail .icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border: 1px solid var(--gold-dark);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); font-size: 0.85rem;
+    }
+    .acces-detail p {
+      font-size: 0.9rem;
+      color: var(--white2);
+      line-height: 1.6;
+    }
+    .acces-detail strong { color: var(--white); display: block; margin-bottom: 0.2rem; }
+    /* === Carte Google Maps – remplacez l'URL src par votre intégration Google Maps réelle === */
+    .map-container {
+      width: 100%; aspect-ratio: 16/10;
+      border: 1px solid rgba(201,168,76,0.2);
+      overflow: hidden;
+      filter: grayscale(60%) brightness(0.8);
+      transition: filter 0.4s;
+    }
+    .map-container:hover { filter: grayscale(0%) brightness(1); }
+    .map-container iframe {
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ===== FOOTER / CONTACT ===== */
+    #contact {
+      padding: 5rem 1.5rem 3rem;
+      background: var(--black);
+      border-top: 1px solid rgba(201,168,76,0.1);
+    }
+    .footer-grid {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+    .footer-brand h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+    .footer-brand p {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 0.5rem;
+      font-style: italic;
+    }
+    .footer-section h4 {
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+    .footer-links { list-style: none; }
+    .footer-links li {
+      font-size: 0.9rem;
+      color: var(--white2);
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .footer-links li a {
+      color: var(--white2);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .footer-links li a:hover { color: var(--gold); }
+    .footer-links li .fa-icon { color: var(--gold); width: 14px; text-align: center; }
+    .horaires-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem 1.2rem; }
+    .horaire-row {
+      font-size: 0.85rem;
+      color: var(--white2);
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(201,168,76,0.08);
+    }
+    .horaire-row.closed { color: var(--gray); }
+    .footer-cta {
+      text-align: center;
+      padding: 2.5rem 0 1.5rem;
+      border-top: 1px solid rgba(201,168,76,0.1);
+      margin-top: 1rem;
+    }
+    .footer-cta p {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--white2);
+      margin-bottom: 1.5rem;
+    }
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      font-size: 0.72rem;
+      color: var(--gray);
+      letter-spacing: 0.1em;
+    }
+
+    /* ===== RESPONSIVE DESKTOP ===== */
+    @media (min-width: 640px) {
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .acces-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+    @media (min-width: 768px) {
+      .burger { display: none !important; }
+      .nav-menu { display: flex !important; }
+      .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+    }
+    @media (max-width: 767px) {
+      .nav-menu { display: none; }
+      .burger { display: flex; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==============================
+       NAVBAR
+  ============================== -->
+  <nav id="navbar">
+    <a href="#hero" class="nav-logo">
+      <!-- === REMPLACEZ "logo.png" par votre fichier logo. Si absent, le texte s'affiche. === -->
+      <img src="logo.png" alt="Kassou the Barber"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+      <span class="nav-logo-text" style="display:none;">KASSOU</span>
+    </a>
+    <ul class="nav-menu">
+      <li><a href="#galerie">Coupes</a></li>
+      <li><a href="#avis">Avis</a></li>
+      <li><a href="#acces">Accès</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="burger" id="burgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Menu mobile -->
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-close" id="closeNav" aria-label="Fermer">&times;</button>
+    <a href="#hero" onclick="closeMobileNav()">Accueil</a>
+    <a href="#galerie" onclick="closeMobileNav()">Coupes</a>
+    <a href="#avis" onclick="closeMobileNav()">Avis</a>
+    <a href="#acces" onclick="closeMobileNav()">Accès</a>
+    <a href="#contact" onclick="closeMobileNav()">Contact</a>
+  </div>
+
+
+  <!-- ==============================
+       HERO
+  ============================== -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="hero-label reveal">Barbier · Lyon</span>
+      <h1 class="hero-name reveal">
+        Kassou<br /><span>the Barber</span>
+      </h1>
+      <p class="hero-sub reveal">Sans Couleur Concept</p>
+      <div class="gold-line-hero reveal"></div>
+      <p class="hero-desc reveal">
+        Plus de <strong>7 ans d'expérience</strong> entre <strong>Lyon</strong> et <strong>l'île de la Réunion</strong>. Une expertise unique qui mêle technique, précision et style.
+      </p>
+      <div class="reveal">
+        <!-- === REMPLACEZ "https://www.planity.com/" par votre vrai lien Planity === -->
+        <a href="https://www.planity.com/" target="_blank" rel="noopener" class="btn-planity">
+          <i class="fa-regular fa-calendar-check"></i>
+          Prendre RDV sur Planity
+        </a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+
+  <!-- ==============================
+       GALERIE DES COUPES
+  ============================== -->
+  <section id="galerie">
+    <div class="section-title reveal">
+      <span class="label">Savoir-faire</span>
+      <h2>Vitrine des coupes</h2>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="gallery-grid">
+
+      <!-- === COUPE 1 — REMPLACEZ "coupe1.jpg" par votre photo === -->
+      <div class="gallery-card reveal">
+        <img src="coupe1.jpg" alt="Burst Fade"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="img-placeholder" style="display:none;">coupe1.jpg</div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Signature</span>
+          <h3 class="gallery-title">Burst Fade</h3>
+        </div>
+      </div>
+
+      <!-- === COUPE 2 — REMPLACEZ "coupe2.jpg" par votre photo === -->
+      <div class="gallery-card reveal" style="transition-delay:0.1s">
+        <img src="coupe2.jpg" alt="Taper"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="img-placeholder" style="display:none;">coupe2.jpg</div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Précision</span>
+          <h3 class="gallery-title">Taper</h3>
+        </div>
+      </div>
+
+      <!-- === COUPE 3 — REMPLACEZ "coupe3.jpg" par votre photo === -->
+      <div class="gallery-card reveal" style="transition-delay:0.2s">
+        <img src="coupe3.jpg" alt="Middle Fade"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="img-placeholder" style="display:none;">coupe3.jpg</div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Style</span>
+          <h3 class="gallery-title">Middle Fade</h3>
+        </div>
+      </div>
+
+      <!-- === COUPE 4 — REMPLACEZ "coupe4.jpg" par votre photo === -->
+      <div class="gallery-card reveal" style="transition-delay:0.3s">
+        <img src="coupe4.jpg" alt="Classic Cut"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="img-placeholder" style="display:none;">coupe4.jpg</div>
+        <div class="gallery-overlay">
+          <span class="gallery-tag">Intemporel</span>
+          <h3 class="gallery-title">Classic Cut</h3>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ==============================
+       AVIS CLIENTS
+  ============================== -->
+  <section id="avis">
+    <div class="section-title reveal">
+      <span class="label">Ce qu'ils disent</span>
+      <h2>Avis clients</h2>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="carousel-track-wrapper reveal">
+      <div class="carousel-track" id="carouselTrack">
+
+        <div class="avis-card">
+          <div class="stars">★★★★★</div>
+          <p class="avis-text">Kassou est un vrai artiste du ciseau. Il a compris exactement ce que je voulais dès le premier rendez-vous. La précision du fade est impeccable, je ne vais plus voir personne d'autre.</p>
+          <div class="avis-author">
+            <div class="author-avatar">AM</div>
+            <div>
+              <p class="author-name">Amine M.</p>
+              <p class="author-loc">Lyon · Google</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="avis-card">
+          <div class="stars">★★★★★</div>
+          <p class="avis-text">Ambiance top, le salon Sans Couleur Concept est vraiment unique. Kassou prend le temps, il conseille, il crée. Je sors toujours avec une coupe au-dessus de mes attentes.</p>
+          <div class="avis-author">
+            <div class="author-avatar">JK</div>
+            <div>
+              <p class="author-name">Jordan K.</p>
+              <p class="author-loc">Lyon · Google</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="avis-card">
+          <div class="stars">★★★★★</div>
+          <p class="avis-text">Un niveau professionnel exceptionnel. Le burst fade qu'il m'a fait était parfait. Les gens m'ont demandé toute la semaine où j'étais allé me couper les cheveux !</p>
+          <div class="avis-author">
+            <div class="author-avatar">RL</div>
+            <div>
+              <p class="author-name">Raphaël L.</p>
+              <p class="author-loc">Lyon · Instagram</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="avis-card">
+          <div class="stars">★★★★★</div>
+          <p class="avis-text">7 ans d'expérience ça se voit ! Entre Lyon et la Réunion, il a développé un style unique. Super accueillant, à l'écoute, et surtout très talentueux. Je recommande à 100%.</p>
+          <div class="avis-author">
+            <div class="author-avatar">SW</div>
+            <div>
+              <p class="author-name">Samuel W.</p>
+              <p class="author-loc">Lyon · Google</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="avis-card">
+          <div class="stars">★★★★★</div>
+          <p class="avis-text">Meilleur barbier de Lyon sans hésitation. Le taper qu'il fait est chirurgical. On sent l'expérience et la passion dans chaque geste. Le salon est beau en plus, très bon état d'esprit.</p>
+          <div class="avis-author">
+            <div class="author-avatar">TN</div>
+            <div>
+              <p class="author-name">Thomas N.</p>
+              <p class="author-loc">Lyon · Google</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="carousel-controls">
+      <button class="carousel-btn" id="prevBtn" aria-label="Précédent"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="carousel-dots" id="carouselDots"></div>
+      <button class="carousel-btn" id="nextBtn" aria-label="Suivant"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+
+  <!-- ==============================
+       ACCÈS & MAP
+  ============================== -->
+  <section id="acces">
+    <div class="section-title reveal">
+      <span class="label">Nous trouver</span>
+      <h2>Accès & Localisation</h2>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="acces-grid">
+      <div class="acces-info reveal-left">
+        <h3>Sans Couleur Concept</h3>
+
+        <div class="acces-detail">
+          <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
+          <p>
+            <strong>Adresse</strong>
+            Sans Couleur Concept<br />Lyon, France
+          </p>
+        </div>
+
+        <div class="acces-detail">
+          <div class="icon"><i class="fa-solid fa-phone"></i></div>
+          <p>
+            <strong>Téléphone</strong>
+            <!-- === REMPLACEZ par votre numéro de téléphone === -->
+            <a href="tel:+33600000000" style="color:var(--white2); text-decoration:none;">+33 6 00 00 00 00</a>
+          </p>
+        </div>
+
+        <div class="acces-detail">
+          <div class="icon"><i class="fa-brands fa-instagram"></i></div>
+          <p>
+            <strong>Instagram</strong>
+            <!-- === REMPLACEZ par votre compte Instagram === -->
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:none;">@kassouthebarber</a>
+          </p>
+        </div>
+
+        <div class="acces-detail">
+          <div class="icon"><i class="fa-regular fa-calendar-check"></i></div>
+          <p>
+            <strong>Réservation en ligne</strong>
+            Via Planity — rapide &amp; simple
+          </p>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <!-- === REMPLACEZ le lien Planity === -->
+          <a href="https://www.planity.com/" target="_blank" rel="noopener" class="btn-planity-ghost">
+            <i class="fa-regular fa-calendar-check"></i>
+            Prendre RDV
+          </a>
+        </div>
+      </div>
+
+      <!-- === CARTE GOOGLE MAPS
+           Pour personnaliser : allez sur maps.google.com, cherchez "Sans Couleur Concept Lyon",
+           cliquez "Partager" > "Intégrer une carte" et copiez le lien src de l'iframe ici. === -->
+      <div class="map-container reveal-right">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d89056.09451706!2d4.7800!3d45.7490!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47f4ea516ae922e1%3A0x408ab2ae4bb21f0!2sLyon!5e0!3m2!1sfr!2sfr!4v1700000000000!5m2!1sfr!2sfr"
+          allowfullscreen=""
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Localisation Sans Couleur Concept Lyon">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ==============================
+       FOOTER / CONTACT
+  ============================== -->
+  <footer id="contact">
+    <div class="footer-grid">
+
+      <div class="footer-brand reveal">
+        <h2>Kassou the Barber</h2>
+        <p>Sans Couleur Concept · Lyon</p>
+        <div class="gold-line" style="margin:1rem 0;"></div>
+        <p style="font-size:0.8rem; color:var(--gray); font-style:normal; line-height:1.7;">
+          Plus de 7 ans d'expertise. <br />Une coupe, une signature.
+        </p>
+      </div>
+
+      <div class="footer-section reveal" style="transition-delay:0.1s">
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li>
+            <i class="fa-solid fa-phone fa-icon"></i>
+            <!-- === REMPLACEZ par votre numéro === -->
+            <a href="tel:+33600000000">+33 6 00 00 00 00</a>
+          </li>
+          <li>
+            <i class="fa-brands fa-instagram fa-icon"></i>
+            <!-- === REMPLACEZ par votre Instagram === -->
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener">@kassouthebarber</a>
+          </li>
+          <li>
+            <i class="fa-solid fa-location-dot fa-icon"></i>
+            Sans Couleur Concept, Lyon
+          </li>
+          <li>
+            <i class="fa-regular fa-calendar-check fa-icon"></i>
+            <!-- === REMPLACEZ le lien Planity === -->
+            <a href="https://www.planity.com/" target="_blank" rel="noopener">Réserver sur Planity</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-section reveal" style="transition-delay:0.2s">
+        <h4>Horaires</h4>
+        <!-- === REMPLACEZ par vos vrais horaires === -->
+        <div class="horaires-grid">
+          <span class="horaire-row">Lundi</span><span class="horaire-row">9h – 19h</span>
+          <span class="horaire-row">Mardi</span><span class="horaire-row">9h – 19h</span>
+          <span class="horaire-row">Mercredi</span><span class="horaire-row">9h – 19h</span>
+          <span class="horaire-row">Jeudi</span><span class="horaire-row">9h – 20h</span>
+          <span class="horaire-row">Vendredi</span><span class="horaire-row">9h – 20h</span>
+          <span class="horaire-row">Samedi</span><span class="horaire-row">9h – 18h</span>
+          <span class="horaire-row closed">Dimanche</span><span class="horaire-row closed">Fermé</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-cta reveal">
+      <p>Prêt à transformer votre style ?</p>
+      <!-- === REMPLACEZ le lien Planity === -->
+      <a href="https://www.planity.com/" target="_blank" rel="noopener" class="btn-planity">
+        <i class="fa-regular fa-calendar-check"></i>
+        Prendre RDV sur Planity
+      </a>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Kassou the Barber · Sans Couleur Concept · Lyon</p>
+    </div>
+  </footer>
+
+
+  <!-- ==============================
+       JAVASCRIPT
+  ============================== -->
+  <script>
+    /* ---- NAVBAR scroll ---- */
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    /* ---- BURGER menu ---- */
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileNav = document.getElementById('mobileNav');
+    const closeNav  = document.getElementById('closeNav');
+    burgerBtn.addEventListener('click', () => mobileNav.classList.add('open'));
+    closeNav.addEventListener('click',  () => mobileNav.classList.remove('open'));
+    function closeMobileNav() { mobileNav.classList.remove('open'); }
+
+    /* ---- SCROLL REVEAL ---- */
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+
+    /* ---- CAROUSEL AVIS ---- */
+    const track  = document.getElementById('carouselTrack');
+    const cards  = track.querySelectorAll('.avis-card');
+    const dotsEl = document.getElementById('carouselDots');
+    let current  = 0;
+
+    const cardWidth = () => cards[0].offsetWidth + 20; // gap 20
+
+    // Crée les dots
+    cards.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(d);
+    });
+
+    function goTo(idx) {
+      current = Math.max(0, Math.min(idx, cards.length - 1));
+      track.style.transform = `translateX(-${current * cardWidth()}px)`;
+      dotsEl.querySelectorAll('.dot').forEach((d, i) =>
+        d.classList.toggle('active', i === current));
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+    // Auto-play
+    let autoPlay = setInterval(() => goTo((current + 1) % cards.length), 4500);
+    track.parentElement.addEventListener('mouseenter', () => clearInterval(autoPlay));
+    track.parentElement.addEventListener('mouseleave', () => {
+      autoPlay = setInterval(() => goTo((current + 1) % cards.length), 4500);
+    });
+
+    // Touch swipe
+    let startX = 0;
+    track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+    track.addEventListener('touchend',   e => {
+      const diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) goTo(diff > 0 ? current + 1 : current - 1);
+    });
+  </script>
+
+</body>
+</html>
