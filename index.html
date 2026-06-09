@@ -132,13 +132,10 @@
       overflow: hidden;
     }
 
-    /* --- Ciel sunset multi-couche --- */
     .hero-sky {
       position: absolute;
       inset: 0;
       z-index: 0;
-      /* Coucher de soleil LA : du haut vers le bas
-         nuit profonde → violet → rose chaud → orange brûlé → or horizon */
       background: linear-gradient(
         180deg,
         #0b0720 0%,
@@ -156,18 +153,15 @@
       );
     }
 
-    /* Pulsation très douce du ciel au fil du temps */
     @keyframes skyBreath {
       0%, 100% { filter: brightness(1) saturate(1); }
       50%       { filter: brightness(1.06) saturate(1.08); }
     }
     .hero-sky { animation: skyBreath 8s ease-in-out infinite; }
 
-    /* --- Soleil --- */
     .hero-sun {
       position: absolute;
       z-index: 1;
-      /* Positionné sur l'horizon, légèrement bas pour que les silhouettes le coupent */
       bottom: 28%;
       left: 50%;
       transform: translateX(-50%);
@@ -175,7 +169,6 @@
       height: clamp(60px, 14vw, 120px);
       border-radius: 50%;
       background: radial-gradient(circle, #ffe9a0 0%, #ffcc55 35%, #ff8c20 65%, transparent 100%);
-      /* Halo solaire */
       box-shadow:
         0 0 clamp(20px, 5vw, 60px) clamp(10px, 3vw, 30px) rgba(255, 180, 40, 0.55),
         0 0 clamp(40px, 10vw, 120px) clamp(20px, 5vw, 60px) rgba(255, 120, 20, 0.25),
@@ -193,7 +186,6 @@
     }
     .hero-sun { animation: sunPulse 5s ease-in-out infinite; }
 
-    /* Reflet du soleil sur la mer */
     .hero-sun-reflection {
       position: absolute;
       z-index: 2;
@@ -211,13 +203,11 @@
       filter: blur(8px);
     }
 
-    /* --- Mer / horizon --- */
     .hero-sea {
       position: absolute;
       z-index: 2;
       bottom: 0; left: 0; right: 0;
       height: 30%;
-      /* Eau : dorée à l'horizon, profonde en bas */
       background: linear-gradient(
         180deg,
         rgba(180, 110, 30, 0.55) 0%,
@@ -225,7 +215,6 @@
         rgba(10, 8, 20, 0.92) 100%
       );
     }
-    /* Micro-vagues */
     .hero-sea::before {
       content: '';
       position: absolute;
@@ -259,22 +248,18 @@
       to   { transform: translateX(40px); }
     }
 
-    /* --- Scène SVG (palmiers + grande roue) --- */
     .hero-scene {
       position: absolute;
       bottom: 0; left: 0; right: 0;
       z-index: 3;
-      /* La scène remonte légèrement au scroll via JS */
       will-change: transform;
     }
     .hero-scene svg {
       width: 100%;
       display: block;
-      /* Hauteur responsive : couvre bien l'écran jusqu'à 420px de haut */
       height: clamp(260px, 55vw, 520px);
     }
 
-    /* Lueur de la grande roue */
     @keyframes ferrisGlow {
       0%, 100% { opacity: 0.55; }
       50%       { opacity: 1; }
@@ -282,7 +267,6 @@
     .ferris-lights { animation: ferrisGlow 2.8s ease-in-out infinite; }
     .ferris-lights-2 { animation: ferrisGlow 2.8s ease-in-out infinite; animation-delay: -1.4s; }
 
-    /* Rotation de la grande roue */
     @keyframes ferrisSpin {
       from { transform: rotate(0deg); }
       to   { transform: rotate(360deg); }
@@ -293,7 +277,6 @@
       transform-box: fill-box;
     }
 
-    /* Balancement palmier gauche */
     @keyframes palmSwayL {
       0%, 100% { transform: rotate(0deg); }
       40%       { transform: rotate(2.2deg); }
@@ -309,14 +292,11 @@
     .palm-r1 { transform-origin: 50% 100%; transform-box: fill-box; animation: palmSwayR 8s ease-in-out infinite; animation-delay: -1.5s; }
     .palm-r2 { transform-origin: 50% 100%; transform-box: fill-box; animation: palmSwayR 10s ease-in-out infinite; animation-delay: -4s; }
 
-    /* --- Overlay de lisibilité --- */
-    /* Dégradé sombre qui écrase le haut pour garantir contraste du texte */
     .hero-overlay {
       position: absolute;
       inset: 0;
       z-index: 4;
       background:
-        /* Haut : voile sombre pour le texte */
         linear-gradient(
           180deg,
           rgba(6, 4, 16, 0.78) 0%,
@@ -327,10 +307,8 @@
       pointer-events: none;
     }
 
-    /* --- Contenu hero --- */
     .hero-content { position: relative; z-index: 5; max-width: 660px; }
 
-    /* Logo / palmier animé */
     .hero-palm-wrap {
       position: relative;
       display: inline-block;
@@ -448,40 +426,328 @@
     }
 
     /* ================================================================
-       GALERIE
+       GALERIE — CAROUSELS PAR CATÉGORIE (NOUVEAU)
     ================================================================ */
-    #galerie { padding:6rem 1.5rem; background:var(--dark); }
-    .gallery-grid {
-      display:grid; grid-template-columns:repeat(2,1fr);
-      gap:0.8rem; max-width:900px; margin:0 auto;
+    #galerie {
+      padding: 6rem 0 7rem;
+      background: var(--dark);
+      overflow: hidden;
     }
-    .gallery-card { position:relative; aspect-ratio:3/4; overflow:hidden; cursor:pointer; }
-    .gallery-card img {
-      width:100%; height:100%; object-fit:cover;
-      transition:transform 0.65s ease;
-      filter:grayscale(30%) brightness(0.8) contrast(1.05);
+
+    #galerie .section-title {
+      padding: 0 1.5rem;
     }
-    .gallery-card:hover img { transform:scale(1.07); filter:grayscale(0%) brightness(0.95); }
-    .gallery-overlay {
-      position:absolute; inset:0;
-      background:linear-gradient(to top, rgba(8,8,8,0.88) 0%, transparent 50%);
-      display:flex; flex-direction:column; justify-content:flex-end; padding:1.2rem;
+
+    /* ---- Bloc catégorie ---- */
+    .gallery-category {
+      margin-bottom: 3.5rem;
     }
-    .gallery-tag {
-      font-size:0.6rem; letter-spacing:0.28em; text-transform:uppercase;
-      color:var(--accent); margin-bottom:0.3rem;
+    .gallery-category:last-child {
+      margin-bottom: 0;
     }
-    .gallery-title {
-      font-family:'Playfair Display',serif; font-size:1.15rem;
-      font-weight:700; color:var(--white); line-height:1.2;
+
+    /* Header de catégorie */
+    .gallery-cat-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      margin-bottom: 1.2rem;
     }
-    .gallery-card .img-placeholder {
-      width:100%; height:100%;
-      display:flex; align-items:center; justify-content:center;
-      background:var(--dark3); color:var(--gray);
-      font-size:0.72rem; letter-spacing:0.1em; flex-direction:column; gap:0.5rem;
+    .gallery-cat-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(1rem, 3.5vw, 1.25rem);
+      letter-spacing: 0.38em;
+      text-transform: uppercase;
+      color: var(--white);
+      position: relative;
     }
-    .img-placeholder i { font-size:1.5rem; color:var(--accent-dk); }
+    .gallery-cat-title::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--accent);
+      margin-top: 5px;
+    }
+    .gallery-cat-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      color: var(--accent-dk);
+    }
+
+    /* ---- Piste scrollable ---- */
+    .gallery-track-outer {
+      position: relative;
+    }
+    /* Gradient de fondu gauche/droite pour indiquer qu'il y a plus */
+    .gallery-track-outer::before,
+    .gallery-track-outer::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 48px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .gallery-track-outer::before {
+      left: 0;
+      background: linear-gradient(to right, var(--dark), transparent);
+    }
+    .gallery-track-outer::after {
+      right: 0;
+      background: linear-gradient(to left, var(--dark), transparent);
+    }
+
+    .gallery-track {
+      display: flex;
+      gap: 12px;
+      padding: 4px 1.5rem 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      cursor: grab;
+      user-select: none;
+    }
+    .gallery-track::-webkit-scrollbar { display: none; }
+    .gallery-track.is-dragging { cursor: grabbing; scroll-snap-type: none; }
+
+    /* ---- Carte photo ---- */
+    .gallery-item {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      position: relative;
+      border-radius: 2px;
+      overflow: hidden;
+      /* Largeur responsive : ~72vw mobile, 260px tablet+, max 320px */
+      width: clamp(220px, 72vw, 320px);
+      aspect-ratio: 3 / 4;
+      cursor: pointer;
+      background: var(--dark3);
+      /* Ombre subtile */
+      box-shadow: 0 4px 28px rgba(0,0,0,0.45);
+      transition: box-shadow 0.4s ease, transform 0.4s ease;
+    }
+    .gallery-item:hover {
+      box-shadow: 0 8px 48px rgba(0,0,0,0.65);
+      transform: translateY(-3px);
+    }
+
+    .gallery-item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  filter 0.5s ease;
+      filter: brightness(0.82) contrast(1.06) saturate(0.85);
+    }
+    .gallery-item:hover img {
+      transform: scale(1.05);
+      filter: brightness(0.95) contrast(1.02) saturate(1);
+    }
+
+    /* Overlay dégradé bas */
+    .gallery-item-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(6,5,14,0.82) 0%,
+        rgba(6,5,14,0.3) 38%,
+        transparent 65%
+      );
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .gallery-item:hover .gallery-item-overlay {
+      opacity: 0.7;
+    }
+
+    /* Icône zoom discret */
+    .gallery-item-zoom {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      opacity: 0;
+      width: 44px; height: 44px;
+      border: 1px solid rgba(200,185,154,0.7);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+      font-size: 0.9rem;
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      background: rgba(8,8,8,0.35);
+    }
+    .gallery-item:hover .gallery-item-zoom {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* Numéro de position (dot indicator) */
+    .gallery-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 0.85rem;
+      padding: 0 1.5rem;
+    }
+    .gallery-dot {
+      width: 18px; height: 2px;
+      background: var(--gray-light);
+      border-radius: 1px;
+      transition: background 0.3s, width 0.3s;
+      cursor: pointer;
+    }
+    .gallery-dot.active {
+      background: var(--accent);
+      width: 32px;
+    }
+
+    /* ================================================================
+       LIGHTBOX — ZOOM LUXUEUX
+    ================================================================ */
+    #lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    #lightbox.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Fond flouté */
+    #lightbox-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(4, 3, 10, 0.88);
+      backdrop-filter: blur(18px) saturate(0.6);
+      -webkit-backdrop-filter: blur(18px) saturate(0.6);
+    }
+
+    /* Contenu lightbox */
+    #lightbox-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1rem;
+      max-width: min(92vw, 700px);
+      width: 100%;
+    }
+
+    #lightbox-img-wrap {
+      flex: 1;
+      position: relative;
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.7);
+      transform: scale(0.88) translateY(20px);
+      transition: transform 0.5s cubic-bezier(0.34, 1.38, 0.64, 1);
+    }
+    #lightbox.open #lightbox-img-wrap {
+      transform: scale(1) translateY(0);
+    }
+
+    #lightbox-img {
+      width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Fine ligne dorée en bas de l'image */
+    #lightbox-img-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    /* Caption lightbox */
+    #lightbox-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.2rem 1.2rem 1rem;
+      background: linear-gradient(to top, rgba(6,5,14,0.92) 0%, transparent 100%);
+    }
+    #lightbox-caption-tag {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+    #lightbox-caption-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.04em;
+    }
+
+    /* Bouton fermer */
+    #lightbox-close {
+      position: absolute;
+      top: -14px; right: -14px;
+      width: 38px; height: 38px;
+      background: var(--dark2);
+      border: 1px solid rgba(200,185,154,0.25);
+      color: var(--accent);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      transition: background 0.3s, transform 0.3s;
+      z-index: 2;
+    }
+    #lightbox-close:hover {
+      background: var(--accent);
+      color: var(--black);
+      transform: rotate(90deg);
+    }
+
+    /* Boutons nav lightbox */
+    .lightbox-nav {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      width: 38px; height: 38px;
+      background: rgba(15,15,15,0.7);
+      border: 1px solid rgba(200,185,154,0.2);
+      color: var(--accent);
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 2px;
+      transition: background 0.3s;
+      z-index: 3;
+    }
+    .lightbox-nav:hover { background: rgba(200,185,154,0.2); }
+    #lightbox-prev { left: -52px; }
+    #lightbox-next { right: -52px; }
+
+    @media (max-width: 540px) {
+      #lightbox-prev { left: 6px; }
+      #lightbox-next { right: 6px; }
+      #lightbox-content { padding: 0.5rem; }
+    }
 
     /* ================================================================
        AVIS
@@ -648,14 +914,14 @@
 
     /* RESPONSIVE */
     @media (min-width:640px) {
-      .gallery-grid { grid-template-columns:repeat(2,1fr); }
       .acces-grid   { grid-template-columns:1fr 1fr; }
       .footer-grid  { grid-template-columns:1fr 1fr 1fr; }
     }
     @media (min-width:768px) {
       .burger    { display:none !important; }
       .nav-menu  { display:flex !important; }
-      .gallery-grid { grid-template-columns:repeat(4,1fr); gap:1rem; }
+      /* Sur desktop, items gallery un peu plus larges */
+      .gallery-item { width: clamp(240px, 26vw, 320px); }
     }
     @media (max-width:767px) {
       .nav-menu      { display:none; }
@@ -703,34 +969,14 @@
   ================================================================ -->
   <section id="hero">
 
-    <!-- Couche 1 : ciel dégradé -->
     <div class="hero-sky"></div>
-
-    <!-- Couche 2 : soleil -->
     <div class="hero-sun"></div>
-
-    <!-- Couche 3 : mer -->
     <div class="hero-sea"></div>
     <div class="hero-sun-reflection"></div>
 
-    <!-- Couche 4 : scène SVG silhouette (palmiers + grande roue Santa Monica) -->
     <div class="hero-scene" id="heroScene">
-      <!--
-        Viewbox : 1200 x 500
-        Organisation gauche → droite :
-          - Palmier BG gauche (lointain, plus petit)
-          - Palmier FG gauche (proche, grand)
-          - Structure du pier / parc (pontons, pilotis)
-          - Grande roue (au centre-droite)
-          - Nacelles (tournent)
-          - Pont / pier prolongé
-          - Palmier FG droite
-          - Palmier BG droite
-        Tout en noir quasi absolu (#0a0808) pour la silhouette parfaite
-      -->
       <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
         <defs>
-          <!-- Lueur chaude sur la grande roue -->
           <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
             <feMerge>
@@ -748,22 +994,12 @@
           </filter>
         </defs>
 
-        <!-- ======================================================
-             SOL / BASE (silhouette montée du bas)
-        ====================================================== -->
-        <!-- Plage + ligne de rivage -->
         <path d="M0 420 Q300 400 600 415 Q900 430 1200 418 L1200 500 L0 500 Z" fill="#080606"/>
-        <!-- Ombre de profondeur -->
         <path d="M0 435 Q300 418 600 428 Q900 440 1200 432 L1200 500 L0 500 Z" fill="#050404"/>
 
-        <!-- ======================================================
-             PALMIER LOINTAIN GAUCHE  (léger, petit)
-        ====================================================== -->
         <g class="palm-l2">
-          <!-- tronc -->
           <path d="M80 420 C82 390 84 360 86 330 C88 308 90 285 92 265 C93 252 94 240 96 228"
                 stroke="#0c0a08" stroke-width="6" stroke-linecap="round" fill="none"/>
-          <!-- feuilles -->
           <path d="M96 228 C75 205 48 200 38 212 C46 226 76 225 96 232" fill="#0c0a08"/>
           <path d="M96 228 C118 202 145 196 154 210 C144 224 116 222 96 232" fill="#0c0a08"/>
           <path d="M96 228 C70 218 48 228 42 240 C54 246 78 238 96 234" fill="#0e0c09"/>
@@ -772,22 +1008,16 @@
           <path d="M96 228 C112 210 132 204 140 214 C134 226 112 226 96 234" fill="#0f0d0a"/>
         </g>
 
-        <!-- ======================================================
-             GRAND PALMIER GAUCHE (proche, imposant)
-        ====================================================== -->
         <g class="palm-l1">
-          <!-- tronc courbé vers la droite -->
           <path d="M150 500 C152 460 155 418 158 375 C161 340 165 304 170 272 C175 248 180 224 185 200 C188 185 192 170 195 155"
                 stroke="#080706" stroke-width="13" stroke-linecap="round" fill="none"/>
           <path d="M158 500 C160 458 163 416 166 373 C169 338 173 302 178 270 C183 246 188 222 193 198 C196 183 200 168 203 153"
                 stroke="#100e0b" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <!-- Encoches du tronc -->
           <path d="M155 460 C160 458 165 460 170 458" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.7"/>
           <path d="M157 430 C162 428 167 430 172 428" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.6"/>
           <path d="M159 400 C164 398 169 400 174 398" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.55"/>
           <path d="M161 370 C166 368 171 370 176 368" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.5"/>
           <path d="M163 340 C168 338 173 340 178 338" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.45"/>
-          <!-- feuilles grand palmier gauche -->
           <path d="M195 155 C155 122 108 118 90 136 C104 158 154 156 195 165" fill="#090807"/>
           <path d="M195 155 C165 118 132 108 116 120 C124 140 160 148 195 165" fill="#0b0908"/>
           <path d="M195 155 C238 120 284 116 300 134 C284 156 236 154 195 165" fill="#090807"/>
@@ -796,20 +1026,13 @@
           <path d="M195 155 C240 136 272 146 278 160 C262 172 230 162 195 168" fill="#0c0a09"/>
           <path d="M195 155 C168 132 144 124 132 134 C136 146 164 152 195 165" fill="#0d0b0a"/>
           <path d="M195 155 C222 130 248 122 260 132 C256 144 228 150 195 165" fill="#0d0b0a"/>
-          <!-- noix de coco -->
           <ellipse cx="192" cy="168" rx="7" ry="6" fill="#080606"/>
           <ellipse cx="202" cy="165" rx="6" ry="5" fill="#080606"/>
         </g>
 
-        <!-- ======================================================
-             PIER / STRUCTURE SANTA MONICA (pilotis + planches)
-        ====================================================== -->
-        <!-- Plateforme du pier -->
         <rect x="380" y="360" width="620" height="28" fill="#070606"/>
-        <!-- Planche légère du pier -->
         <path d="M380 360 L1000 360 L1000 362 L380 362 Z" fill="#0c0a09" opacity="0.5"/>
 
-        <!-- Pilotis du pier (12 paires) -->
         <g fill="#070606">
           <rect x="390" y="360" width="7"  height="80"/>
           <rect x="404" y="360" width="7"  height="76"/>
@@ -833,7 +1056,6 @@
           <rect x="993" y="360" width="7"  height="74"/>
         </g>
 
-        <!-- Diagonales entre les pilotis (X-bracing) -->
         <g stroke="#090807" stroke-width="2" opacity="0.6" fill="none">
           <line x1="390" y1="440" x2="411" y2="360"/>
           <line x1="411" y1="440" x2="390" y2="360"/>
@@ -847,46 +1069,29 @@
           <line x1="871" y1="440" x2="850" y2="360"/>
         </g>
 
-        <!-- Bâtiments / stands du parc (silhouettes) -->
-        <!-- Bâtiment gauche du pier -->
         <rect x="395" y="318" width="80" height="42" fill="#070606"/>
         <path d="M395 318 L435 295 L475 318 Z" fill="#080707"/>
-        <!-- Fenêtres -->
         <rect x="405" y="328" width="12" height="10" fill="#0e0c0a" opacity="0.6"/>
         <rect x="424" y="328" width="12" height="10" fill="#0e0c0a" opacity="0.6"/>
         <rect x="443" y="328" width="12" height="10" fill="#0e0c0a" opacity="0.6"/>
 
-        <!-- Bâtiment entrée pier (arc) -->
         <rect x="490" y="310" width="70" height="50" fill="#070606"/>
         <path d="M490 310 Q525 285 560 310" fill="#080707"/>
         <path d="M503 310 Q525 295 547 310" fill="#0a0908"/>
-        <!-- Enseigne pier -->
         <rect x="498" y="295" width="54" height="14" fill="#060505" rx="2"/>
 
-        <!-- Kiosques et stands intermédiaires -->
         <rect x="580" y="330" width="50" height="30" fill="#070606"/>
         <path d="M580 330 L605 315 L630 330 Z" fill="#090807"/>
 
-        <!-- ======================================================
-             GRANDE ROUE SANTA MONICA
-             Centre : x=760, y=250 ; rayon : 130
-        ====================================================== -->
-
-        <!-- Support / montant de la grande roue -->
         <path d="M720 360 L742 250 M800 360 L778 250" stroke="#070606" stroke-width="10" stroke-linecap="round" fill="none"/>
         <path d="M705 360 L730 250 M815 360 L790 250" stroke="#090807" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.6"/>
-        <!-- Traverse du bas -->
         <rect x="700" y="350" width="120" height="12" fill="#080706" rx="2"/>
         <rect x="715" y="355" width="90"  height="8"  fill="#0a0908" rx="2"/>
 
-        <!-- Anneau extérieur statique (ombre/fond) -->
         <circle cx="760" cy="250" r="132" fill="none" stroke="#060505" stroke-width="14"/>
-        <!-- Anneau extérieur -->
         <circle cx="760" cy="250" r="130" fill="none" stroke="#0a0908" stroke-width="8"/>
 
-        <!-- Groupe rotatif -->
         <g class="ferris-wheel-ring">
-          <!-- Rayons (12) -->
           <g stroke="#0c0a08" stroke-width="4" fill="none">
             <line x1="760" y1="250" x2="760" y2="120"/>
             <line x1="760" y1="250" x2="760" y2="380"/>
@@ -896,49 +1101,30 @@
             <line x1="760" y1="250" x2="852" y2="342"/>
             <line x1="760" y1="250" x2="852" y2="158"/>
             <line x1="760" y1="250" x2="668" y2="342"/>
-            <!-- Rayons intermédiaires -->
             <line x1="760" y1="250" x2="695" y2="137"/>
             <line x1="760" y1="250" x2="825" y2="363"/>
             <line x1="760" y1="250" x2="873" y2="185"/>
             <line x1="760" y1="250" x2="647" y2="315"/>
           </g>
-
-          <!-- Nacelles (12 gondoles) sur l'anneau r=130 -->
-          <!-- Elles gardent leur orientation avec un contre-rotate implicite via leur rect -->
           <g fill="#0c0a08" stroke="#0e0c0a" stroke-width="1.5">
-            <!-- 0° top -->
             <rect x="749" y="108" width="22" height="15" rx="2"/>
-            <!-- 30° -->
             <rect x="811" y="125" width="22" height="15" rx="2" transform="rotate(30,822,132)"/>
-            <!-- 60° -->
             <rect x="852" y="183" width="22" height="15" rx="2" transform="rotate(60,863,190)"/>
-            <!-- 90° right -->
             <rect x="879" y="241" width="22" height="15" rx="2"/>
-            <!-- 120° -->
             <rect x="852" y="303" width="22" height="15" rx="2" transform="rotate(-60,863,310)"/>
-            <!-- 150° -->
             <rect x="811" y="353" width="22" height="15" rx="2" transform="rotate(-30,822,360)"/>
-            <!-- 180° bottom -->
             <rect x="749" y="377" width="22" height="15" rx="2"/>
-            <!-- 210° -->
             <rect x="695" y="353" width="22" height="15" rx="2" transform="rotate(30,706,360)"/>
-            <!-- 240° -->
             <rect x="653" y="303" width="22" height="15" rx="2" transform="rotate(60,664,310)"/>
-            <!-- 270° left -->
             <rect x="630" y="241" width="22" height="15" rx="2"/>
-            <!-- 300° -->
             <rect x="653" y="183" width="22" height="15" rx="2" transform="rotate(-60,664,190)"/>
-            <!-- 330° -->
             <rect x="695" y="125" width="22" height="15" rx="2" transform="rotate(-30,706,132)"/>
           </g>
         </g>
 
-        <!-- Moyeu central -->
         <circle cx="760" cy="250" r="14" fill="#0a0908"/>
         <circle cx="760" cy="250" r="7"  fill="#0d0b09"/>
 
-        <!-- Lumières de la grande roue (two interleaved rings of dots, pulsing) -->
-        <!-- Ring 1 — 12 points à r=130 -->
         <g class="ferris-lights" filter="url(#softglow)">
           <circle cx="760" cy="120" r="4" fill="#ffcc66" opacity="0.85"/>
           <circle cx="890" cy="250" r="4" fill="#ffcc66" opacity="0.85"/>
@@ -949,36 +1135,25 @@
           <circle cx="668" cy="158" r="4" fill="#ffaa44" opacity="0.85"/>
           <circle cx="668" cy="342" r="4" fill="#ffaa44" opacity="0.85"/>
         </g>
-        <!-- Ring 2 — décalé, pulse déphasé -->
         <g class="ferris-lights-2" filter="url(#glow)">
           <circle cx="825" cy="137" r="3.5" fill="#ff9933" opacity="0.9"/>
           <circle cx="873" cy="315" r="3.5" fill="#ff9933" opacity="0.9"/>
           <circle cx="695" cy="363" r="3.5" fill="#ff9933" opacity="0.9"/>
           <circle cx="647" cy="185" r="3.5" fill="#ff9933" opacity="0.9"/>
-          <!-- Anneau rotatif éclairé -->
           <circle cx="760" cy="120" r="3"  fill="#ffe0a0" opacity="0.7"/>
           <circle cx="890" cy="250" r="3"  fill="#ffe0a0" opacity="0.7"/>
           <circle cx="760" cy="380" r="3"  fill="#ffe0a0" opacity="0.7"/>
           <circle cx="630" cy="250" r="3"  fill="#ffe0a0" opacity="0.7"/>
         </g>
 
-        <!-- ======================================================
-             BÂTIMENTS / ATTRACTIONS SUITE
-        ====================================================== -->
-        <!-- Manège / carrousel structure droite -->
         <rect x="870" y="330" width="65" height="30" fill="#070606"/>
         <path d="M870 330 L902 308 L935 330 Z" fill="#080707"/>
-        <!-- Fanion sur le toit -->
         <line x1="902" y1="308" x2="902" y2="290" stroke="#070606" stroke-width="2"/>
         <path d="M902 290 L916 298 L902 306 Z" fill="#090807"/>
 
-        <!-- Structure support côté droit du pier -->
         <rect x="940" y="320" width="50" height="40" fill="#060505"/>
         <path d="M940 320 L965 300 L990 320 Z" fill="#080707"/>
 
-        <!-- ======================================================
-             PALMIER LOINTAIN DROIT
-        ====================================================== -->
         <g class="palm-r2">
           <path d="M1100 420 C1098 390 1096 360 1094 330 C1092 308 1090 285 1088 265 C1087 252 1086 240 1084 228"
                 stroke="#0c0a08" stroke-width="6" stroke-linecap="round" fill="none"/>
@@ -990,22 +1165,16 @@
           <path d="M1084 228 C1068 210 1048 204 1040 214 C1046 226 1068 226 1084 234" fill="#0f0d0a"/>
         </g>
 
-        <!-- ======================================================
-             GRAND PALMIER DROIT
-        ====================================================== -->
         <g class="palm-r1">
-          <!-- tronc qui penche vers la gauche -->
           <path d="M1060 500 C1058 460 1055 418 1052 375 C1049 340 1045 304 1040 272 C1035 248 1030 224 1025 200 C1022 185 1018 170 1015 155"
                 stroke="#080706" stroke-width="13" stroke-linecap="round" fill="none"/>
           <path d="M1052 500 C1050 458 1047 416 1044 373 C1041 338 1037 302 1032 270 C1027 246 1022 222 1017 198 C1014 183 1010 168 1007 153"
                 stroke="#100e0b" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <!-- Encoches -->
           <path d="M1055 460 C1050 458 1045 460 1040 458" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.7"/>
           <path d="M1053 430 C1048 428 1043 430 1038 428" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.6"/>
           <path d="M1051 400 C1046 398 1041 400 1036 398" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.55"/>
           <path d="M1049 370 C1044 368 1039 370 1034 368" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.5"/>
           <path d="M1047 340 C1042 338 1037 340 1032 338" stroke="#060504" stroke-width="2.5" fill="none" opacity="0.45"/>
-          <!-- feuilles grand palmier droit (miroir) -->
           <path d="M1015 155 C1055 122 1102 118 1120 136 C1106 158 1056 156 1015 165" fill="#090807"/>
           <path d="M1015 155 C1045 118 1078 108 1094 120 C1086 140 1050 148 1015 165" fill="#0b0908"/>
           <path d="M1015 155 C972 120 926 116 910 134 C926 156 974 154 1015 165" fill="#090807"/>
@@ -1014,30 +1183,23 @@
           <path d="M1015 155 C970 136 938 146 932 160 C948 172 980 162 1015 168" fill="#0c0a09"/>
           <path d="M1015 155 C1042 132 1066 124 1078 134 C1074 146 1046 152 1015 165" fill="#0d0b0a"/>
           <path d="M1015 155 C988 130 962 122 950 132 C954 144 982 150 1015 165" fill="#0d0b0a"/>
-          <!-- noix de coco -->
           <ellipse cx="1018" cy="168" rx="7" ry="6" fill="#080606"/>
           <ellipse cx="1008" cy="165" rx="6" ry="5" fill="#080606"/>
         </g>
 
-        <!-- ======================================================
-             SILHOUETTE DU SOL (dernier plan, au-dessus de tout)
-        ====================================================== -->
         <path d="M0 430 Q200 415 400 422 Q600 430 800 424 Q1000 418 1200 425 L1200 500 L0 500 Z" fill="#040303"/>
-
       </svg>
     </div>
 
-    <!-- Couche 5 : overlay de lisibilité -->
     <div class="hero-overlay"></div>
 
-    <!-- Couche 6 : contenu texte -->
     <div class="hero-content">
       <div class="hero-palm-wrap" id="palmWrap">
         <img src="logo.png" alt="KTB" class="hero-logo"
              onerror="this.style.display='none';" />
       </div>
 
-      <span class="hero-label reveal">Barbier · Lyon 🌴</span>
+      <span class="hero-label reveal">Barber · Lyon 🌴</span>
       <h1 class="hero-name reveal">
         Kassou<br /><span>the Barber</span>
       </h1>
@@ -1045,7 +1207,7 @@
       <p class="hero-tagline reveal">Can't stop, won't stop.</p>
       <div class="accent-line-hero reveal"></div>
       <p class="hero-desc reveal">
-        Plus de <strong>7 ans d'expérience</strong> entre <strong>Lyon</strong> et <strong>l'île de la Réunion</strong>. Une expertise unique qui mêle technique, précision et style.
+        Plus de <strong>10 ans d'expérience</strong> entre <strong>Lyon</strong> et <strong>l'île de la Réunion</strong>. Une expertise unique qui mêle technique, précision et style.
       </p>
       <div class="reveal">
         <a href="https://www.planity.com/100-couleurs-69007-lyon" target="_blank" rel="noopener" class="btn-planity">
@@ -1054,15 +1216,12 @@
       </div>
     </div>
 
-    <div class="hero-scroll">
-      <div class="scroll-line"></div>
-      <span>Scroll</span>
-    </div>
-
   </section>
 
 
-  <!-- GALERIE -->
+  <!-- ================================================================
+       GALERIE — CAROUSELS PAR CATÉGORIE
+  ================================================================ -->
   <section id="galerie">
     <div class="section-title reveal">
       <span class="label">Savoir-faire 💈</span>
@@ -1070,45 +1229,184 @@
       <div class="accent-line"></div>
     </div>
 
-    <div class="gallery-grid">
-      <div class="gallery-card reveal">
-        <div class="img-placeholder">
-          <i class="fa-solid fa-scissors"></i>coupe1.jpg
-        </div>
-        <div class="gallery-overlay">
-          <span class="gallery-tag">Signature</span>
-          <h3 class="gallery-title">Burst Fade</h3>
+    <!-- ---- CATÉGORIE 1 : DESIGN ---- -->
+    <div class="gallery-category reveal">
+      <div class="gallery-cat-header">
+        <h3 class="gallery-cat-title">Design</h3>
+        <span class="gallery-cat-desc">Motifs &amp; dessins !</span>
+      </div>
+      <div class="gallery-track-outer">
+        <div class="gallery-track" id="track-design" data-category="Design">
+          <div class="gallery-item" data-src="design1.jpg" data-label="Design" data-title="Art gravé">
+            <img src="design1.jpg" alt="Design 1"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>design1.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="design2.jpg" data-label="Design" data-title="Tracé fin">
+            <img src="design2.jpg" alt="Design 2"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>design2.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
         </div>
       </div>
-      <div class="gallery-card reveal" style="transition-delay:0.1s">
-        <div class="img-placeholder">
-          <i class="fa-solid fa-scissors"></i>coupe2.jpg
-        </div>
-        <div class="gallery-overlay">
-          <span class="gallery-tag">Précision</span>
-          <h3 class="gallery-title">Taper</h3>
-        </div>
-      </div>
-      <div class="gallery-card reveal" style="transition-delay:0.2s">
-        <div class="img-placeholder">
-          <i class="fa-solid fa-scissors"></i>coupe3.jpg
-        </div>
-        <div class="gallery-overlay">
-          <span class="gallery-tag">Style</span>
-          <h3 class="gallery-title">Middle Fade</h3>
-        </div>
-      </div>
-      <div class="gallery-card reveal" style="transition-delay:0.3s">
-        <div class="img-placeholder">
-          <i class="fa-solid fa-scissors"></i>coupe4.jpg
-        </div>
-        <div class="gallery-overlay">
-          <span class="gallery-tag">Créativité</span>
-          <h3 class="gallery-title">Original Cut</h3>
-        </div>
-      </div>
+      <div class="gallery-dots" id="dots-design"></div>
     </div>
+
+    <!-- ---- CATÉGORIE 2 : MODERN MULET ---- -->
+    <div class="gallery-category reveal" style="transition-delay:0.1s">
+      <div class="gallery-cat-header">
+        <h3 class="gallery-cat-title">Modern Mulet</h3>
+        <span class="gallery-cat-desc">Longueur &amp; texture</span>
+      </div>
+      <div class="gallery-track-outer">
+        <div class="gallery-track" id="track-mulet" data-category="Modern Mulet">
+          <div class="gallery-item" data-src="mulet1.jpg" data-label="Modern Mulet" data-title="Mulet texturé">
+            <img src="mulet1.jpg" alt="Mulet 1"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>mulet1.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="mulet2.jpg" data-label="Modern Mulet" data-title="Mulet curly">
+            <img src="mulet2.jpg" alt="Mulet 2"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>mulet2.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="mulet3.jpg" data-label="Modern Mulet" data-title="Mulet wavy">
+            <img src="mulet3.jpg" alt="Mulet 3"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>mulet3.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-dots" id="dots-mulet"></div>
+    </div>
+
+    <!-- ---- CATÉGORIE 3 : BURST FADE ---- -->
+    <div class="gallery-category reveal" style="transition-delay:0.2s">
+      <div class="gallery-cat-header">
+        <h3 class="gallery-cat-title">Burst Fade</h3>
+        <span class="gallery-cat-desc">LE Dégradé signature.</span>
+      </div>
+      <div class="gallery-track-outer">
+        <div class="gallery-track" id="track-burst" data-category="Burst Fade">
+          <div class="gallery-item" data-src="burst1.jpg" data-label="Burst Fade" data-title="Burst afro">
+            <img src="burst1.jpg" alt="Burst 1"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>burst1.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="burst2.jpg" data-label="Burst Fade" data-title="Burst taper">
+            <img src="burst2.jpg" alt="Burst 2"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>burst2.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="burst3.jpg" data-label="Burst Fade" data-title="Burst drop">
+            <img src="burst3.jpg" alt="Burst 3"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>burst3.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-dots" id="dots-burst"></div>
+    </div>
+
+    <!-- ---- CATÉGORIE 4 : HIGH FADE ---- -->
+    <div class="gallery-category reveal" style="transition-delay:0.3s">
+      <div class="gallery-cat-header">
+        <h3 class="gallery-cat-title">High Fade</h3>
+        <span class="gallery-cat-desc">Net &amp; précis</span>
+      </div>
+      <div class="gallery-track-outer">
+        <div class="gallery-track" id="track-high" data-category="High Fade">
+          <div class="gallery-item" data-src="high1.jpg" data-label="High Fade" data-title="High pompadour">
+            <img src="high1.jpg" alt="High Fade 1"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>high1.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="high2.jpg" data-label="High Fade" data-title="High classic">
+            <img src="high2.jpg" alt="High Fade 2"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>high2.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+          <div class="gallery-item" data-src="high3.jpg" data-label="High Fade" data-title="High skin">
+            <img src="high3.jpg" alt="High Fade 3"
+                 onerror="this.style.display='none';this.parentElement.querySelector('.gallery-item-fallback').style.display='flex';" />
+            <div class="gallery-item-fallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;background:var(--dark3);flex-direction:column;gap:.5rem;color:var(--gray);font-size:.72rem;">
+              <i class="fa-solid fa-scissors" style="font-size:1.5rem;color:var(--accent-dk)"></i>high3.jpg
+            </div>
+            <div class="gallery-item-overlay"></div>
+            <div class="gallery-item-zoom"><i class="fa-solid fa-expand"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="gallery-dots" id="dots-high"></div>
+    </div>
+
   </section>
+
+
+  <!-- ================================================================
+       LIGHTBOX
+  ================================================================ -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Agrandissement photo">
+    <div id="lightbox-backdrop"></div>
+    <div id="lightbox-content">
+      <button class="lightbox-nav" id="lightbox-prev" aria-label="Photo précédente">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <div id="lightbox-img-wrap">
+        <img id="lightbox-img" src="" alt="" />
+        <div id="lightbox-caption">
+          <span id="lightbox-caption-tag"></span>
+          <span id="lightbox-caption-title"></span>
+        </div>
+        <button id="lightbox-close" aria-label="Fermer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <button class="lightbox-nav" id="lightbox-next" aria-label="Photo suivante">
+        <i class="fa-solid fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
 
 
   <!-- AVIS -->
@@ -1126,7 +1424,7 @@
         <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
         <i class="fa-solid fa-star"></i>
       </div>
-      <span class="avis-global-label">Basé sur 11+ avis vérifiés</span>
+      <span class="avis-global-label">Basé sur des avis plus que vérifiés</span>
     </div>
 
     <div class="carousel-track-wrapper reveal">
@@ -1251,22 +1549,14 @@
           <div class="icon"><i class="fa-solid fa-location-dot"></i></div>
           <p><strong>Adresse</strong>76 Cours Gambetta<br />69007 Lyon</p>
         </div>
-        <div class="acces-detail">
-          <div class="icon"><i class="fa-solid fa-phone"></i></div>
-          <p><strong>Téléphone</strong><a href="tel:+33751463220" style="color:var(--cream2);text-decoration:none;">07 51 46 32 20</a></p>
-        </div>
+
         <div class="acces-detail">
           <div class="icon"><i class="fa-brands fa-instagram"></i></div>
           <p><strong>Instagram</strong><a href="https://www.instagram.com/kassou_thebarber" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none;">@kassou_thebarber</a></p>
         </div>
         <div class="acces-detail">
           <div class="icon"><i class="fa-regular fa-calendar-check"></i></div>
-          <p><strong>Réservation en ligne</strong> Via Planity &amp; simple</p>
-        </div>
-        <div style="margin-top:1.5rem;">
-          <a href="https://www.planity.com/100-couleurs-69007-lyon" target="_blank" rel="noopener" class="btn-planity-ghost">
-            <i class="fa-regular fa-calendar-check"></i>Prendre RDV
-          </a>
+          <p><strong>Réservation en ligne</strong> Via Planity</p>
         </div>
       </div>
       <div class="map-container reveal-right">
@@ -1290,13 +1580,12 @@
         <h2>Kassou the Barber</h2>
         <p class="tagline">100 Couleurs Concept · Lyon 7e</p>
         <div class="accent-line" style="margin:1rem 0;"></div>
-        <p style="font-size:0.78rem;color:var(--gray);line-height:1.8;">Plus de 7 ans d'expertise.<br />Une coupe, une signature. 🌴</p>
+        <p style="font-size:0.78rem;color:var(--gray);line-height:1.8;">Plus de 10 ans d'expertise.<br />Une coupe, une signature. 🌴</p>
       </div>
 
       <div class="footer-section reveal" style="transition-delay:0.1s">
         <h4>Contact</h4>
         <ul class="footer-links">
-          <li><i class="fa-solid fa-phone fa-icon"></i><a href="tel:+33751463220">07 51 46 32 20</a></li>
           <li><i class="fa-brands fa-instagram fa-icon"></i><a href="https://www.instagram.com/kassou_thebarber" target="_blank" rel="noopener">@kassou_thebarber</a></li>
           <li><i class="fa-solid fa-location-dot fa-icon"></i>76 Cours Gambetta, Lyon 7e</li>
           <li><i class="fa-regular fa-calendar-check fa-icon"></i><a href="https://www.planity.com/100-couleurs-69007-lyon" target="_blank" rel="noopener">Réserver sur Planity</a></li>
@@ -1362,43 +1651,31 @@
     revealEls.forEach(el => io.observe(el));
 
     /* ============================================================
-       PARALLAXE HERO — scène SVG + soleil
-       La scène monte doucement au scroll (vitesse réduite).
-       Le soleil monte encore plus lentement (séparation des plans).
-       Tout en requestAnimationFrame pour fluidité max sur mobile.
+       PARALLAXE HERO
     ============================================================ */
-    const heroScene = document.getElementById('heroScene');
-    const heroSun   = document.querySelector('.hero-sun');
-    const heroSunR  = document.querySelector('.hero-sun-reflection');
-    const heroSea   = document.querySelector('.hero-sea');
+    const heroScene   = document.getElementById('heroScene');
+    const heroSun     = document.querySelector('.hero-sun');
+    const heroSunR    = document.querySelector('.hero-sun-reflection');
     const heroSection = document.getElementById('hero');
 
-    let scrollY = 0, targetY = 0;
-    let sceneY  = 0, sceneTarget  = 0;
-    let sunY    = 0, sunTarget    = 0;
-    let seaO    = 0, seaOTarget   = 0;
+    let sceneY = 0, sceneTarget = 0;
+    let sunY   = 0, sunTarget   = 0;
 
     function parallaxLoop() {
-      // Interpolation douce (lerp)
       sceneY += (sceneTarget - sceneY) * 0.07;
       sunY   += (sunTarget   - sunY)   * 0.05;
-
       if (heroScene) heroScene.style.transform = `translateY(${sceneY.toFixed(1)}px)`;
       if (heroSun)   heroSun.style.transform   = `translateX(-50%) translateY(${sunY.toFixed(1)}px)`;
       if (heroSunR)  heroSunR.style.transform  = `translateX(-50%) translateY(${(sunY * 0.4).toFixed(1)}px)`;
-
       requestAnimationFrame(parallaxLoop);
     }
     parallaxLoop();
 
     window.addEventListener('scroll', () => {
-      scrollY = window.scrollY;
+      const scrollY = window.scrollY;
       const heroH = heroSection ? heroSection.offsetHeight : window.innerHeight;
       if (scrollY < heroH * 1.2) {
-        const progress = scrollY / heroH;
-        // La scène SVG monte de 0 → -80px
         sceneTarget = -scrollY * 0.14;
-        // Le soleil monte un peu moins vite (plan plus lointain)
         sunTarget   = -scrollY * 0.06;
       } else {
         sceneTarget = 0;
@@ -1407,19 +1684,16 @@
     }, { passive: true });
 
     /* ============================================================
-       ANIMATION PALMIER — PARALLAXE AU SCROLL
+       PALMIER LOGO — PARALLAXE
     ============================================================ */
     const palmWrap = document.getElementById('palmWrap');
-    let lastScrollY = 0;
-    let palmAngle = 0, palmTarget = 0;
-
+    let lastScrollY = 0, palmAngle = 0, palmTarget = 0;
     function animatePalm() {
       palmAngle += (palmTarget - palmAngle) * 0.08;
       if (palmWrap) palmWrap.style.transform = `rotate(${palmAngle.toFixed(2)}deg)`;
       requestAnimationFrame(animatePalm);
     }
     animatePalm();
-
     window.addEventListener('scroll', () => {
       const currentY = window.scrollY;
       const delta    = currentY - lastScrollY;
@@ -1433,7 +1707,149 @@
     }, { passive: true });
 
     /* ============================================================
-       CARROUSEL
+       GALERIE — CAROUSELS DRAG & DOTS
+    ============================================================ */
+    const trackIds = ['track-design','track-mulet','track-burst','track-high'];
+    const dotsIds  = ['dots-design', 'dots-mulet', 'dots-burst', 'dots-high'];
+
+    trackIds.forEach((trackId, i) => {
+      const track    = document.getElementById(trackId);
+      const dotsWrap = document.getElementById(dotsIds[i]);
+      if (!track || !dotsWrap) return;
+
+      const items = track.querySelectorAll('.gallery-item');
+
+      /* --- Build dots --- */
+      items.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.className = 'gallery-dot' + (idx === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `Photo ${idx + 1}`);
+        dot.addEventListener('click', () => scrollToItem(track, items, dotsWrap, idx));
+        dotsWrap.appendChild(dot);
+      });
+
+      /* --- Scroll → update dots --- */
+      const updateDots = () => {
+        const containerLeft = track.getBoundingClientRect().left;
+        let closest = 0, minDist = Infinity;
+        items.forEach((item, idx) => {
+          const dist = Math.abs(item.getBoundingClientRect().left - containerLeft);
+          if (dist < minDist) { minDist = dist; closest = idx; }
+        });
+        dotsWrap.querySelectorAll('.gallery-dot').forEach((d, idx) => {
+          d.classList.toggle('active', idx === closest);
+        });
+      };
+      track.addEventListener('scroll', updateDots, { passive: true });
+
+      /* --- Drag to scroll --- */
+      let isDragging = false, startX = 0, scrollLeft = 0;
+      track.addEventListener('mousedown', e => {
+        isDragging = true;
+        startX     = e.pageX - track.offsetLeft;
+        scrollLeft = track.scrollLeft;
+        track.classList.add('is-dragging');
+      });
+      track.addEventListener('mouseleave', () => { isDragging = false; track.classList.remove('is-dragging'); });
+      track.addEventListener('mouseup',    () => { isDragging = false; track.classList.remove('is-dragging'); });
+      track.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x    = e.pageX - track.offsetLeft;
+        const walk = (x - startX) * 1.4;
+        track.scrollLeft = scrollLeft - walk;
+      });
+    });
+
+    function scrollToItem(track, items, dotsWrap, idx) {
+      const item = items[idx];
+      if (!item) return;
+      track.scrollTo({ left: item.offsetLeft - track.offsetLeft - 24, behavior: 'smooth' });
+      dotsWrap.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    }
+
+    /* ============================================================
+       LIGHTBOX
+    ============================================================ */
+    const lightbox     = document.getElementById('lightbox');
+    const lbImg        = document.getElementById('lightbox-img');
+    const lbTag        = document.getElementById('lightbox-caption-tag');
+    const lbTitle      = document.getElementById('lightbox-caption-title');
+    const lbClose      = document.getElementById('lightbox-close');
+    const lbPrev       = document.getElementById('lightbox-prev');
+    const lbNext       = document.getElementById('lightbox-next');
+    const lbBackdrop   = document.getElementById('lightbox-backdrop');
+
+    /* Collect all gallery items in order */
+    let allItems = [];
+    let lbCurrentIdx = 0;
+
+    function buildItemIndex() {
+      allItems = Array.from(document.querySelectorAll('.gallery-item'));
+    }
+    buildItemIndex();
+
+    function openLightbox(idx) {
+      buildItemIndex();
+      lbCurrentIdx = idx;
+      const item = allItems[idx];
+      if (!item) return;
+      const src   = item.dataset.src   || '';
+      const label = item.dataset.label || '';
+      const title = item.dataset.title || '';
+      lbImg.src          = src;
+      lbImg.alt          = title;
+      lbTag.textContent  = label;
+      lbTitle.textContent = title;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      /* Small delay before clearing src to avoid flicker */
+      setTimeout(() => { lbImg.src = ''; }, 400);
+    }
+
+    function lbGoTo(idx) {
+      buildItemIndex();
+      const n = allItems.length;
+      lbCurrentIdx = (idx + n) % n;
+      openLightbox(lbCurrentIdx);
+    }
+
+    /* Attach click on items */
+    document.querySelectorAll('.gallery-item').forEach((item, idx) => {
+      item.addEventListener('click', () => {
+        buildItemIndex();
+        openLightbox(allItems.indexOf(item));
+      });
+    });
+
+    lbClose.addEventListener('click', closeLightbox);
+    lbBackdrop.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', (e) => { e.stopPropagation(); lbGoTo(lbCurrentIdx - 1); });
+    lbNext.addEventListener('click', (e) => { e.stopPropagation(); lbGoTo(lbCurrentIdx + 1); });
+
+    /* Keyboard nav */
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape')      closeLightbox();
+      if (e.key === 'ArrowLeft')   lbGoTo(lbCurrentIdx - 1);
+      if (e.key === 'ArrowRight')  lbGoTo(lbCurrentIdx + 1);
+    });
+
+    /* Touch swipe on lightbox */
+    let lbTouchStartX = 0;
+    lightbox.addEventListener('touchstart', e => { lbTouchStartX = e.touches[0].clientX; }, { passive: true });
+    lightbox.addEventListener('touchend', e => {
+      const diff = lbTouchStartX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 45) lbGoTo(diff > 0 ? lbCurrentIdx + 1 : lbCurrentIdx - 1);
+    });
+
+    /* ============================================================
+       CARROUSEL AVIS
     ============================================================ */
     const track = document.getElementById('carouselTrack');
     let current = 0;
